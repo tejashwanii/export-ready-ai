@@ -13,9 +13,9 @@ const features: { icon: LucideIcon; title: string; desc: string }[] = [
   { icon: FileCheck2, title: "Document Validation", desc: "Upload invoices, packing lists and certificates for instant structural and field-level validation." },
   { icon: Binary, title: "HS Code Intelligence", desc: "AI-assisted HS code confidence analysis with alternate suggestions and rationale." },
   { icon: BadgePercent, title: "CECA Eligibility", desc: "Check preferential tariff eligibility under India–Singapore CECA in seconds." },
-  { icon: ClipboardCheck, title: "Customs Readiness", desc: "Identify blocking issues before filing with a prioritized readiness assessment." },
-  { icon: Lightbulb, title: "Explainable AI", desc: "Every recommendation includes citations, reasoning, and the regulation it maps to." },
-  { icon: FileBarChart2, title: "Export Readiness Report", desc: "Generate a broker-ready compliance report with a single click." },
+  { icon: ClipboardCheck, title: "Customs Readiness", desc: "Assess shipment readiness against both India export regulations and Singapore import requirements before filing." },
+  { icon: Lightbulb, title: "Explainable AI", desc: "Every recommendation includes reasoning, supporting regulations, and the issuing authority." },
+  { icon: FileBarChart2, title: "Export Readiness Report", desc: "Generate a broker-ready report with compliance findings, CECA eligibility, and evidence-backed recommendations." },
 ];
 
 export function Features() {

@@ -25,10 +25,10 @@ export function FinalCTA() {
         </div>
         <div className="relative max-w-2xl">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">
-            Ready to Export with Confidence?
+            Ready to Prepare Your Next Broker-Ready Shipment?
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Catch compliance issues before customs does. Start your first shipment in minutes.
+            Validate cross-border compliance before filing and export with confidence.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <button className="inline-flex items-center gap-2 rounded-md bg-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:translate-y-[-1px] hover:shadow-md">

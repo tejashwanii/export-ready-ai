@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { ArrowRight, PlayCircle, FileText, ShieldCheck, Gauge, PackageCheck, Sparkles } from "lucide-react";
+import { ArrowRight, PlayCircle, FileText, ShieldCheck, PackageCheck, Handshake } from "lucide-react";
 
-const flow = [
+const flow: { icon: typeof FileText; title: string; meta: string; tone: string; flag?: string }[] = [
   { icon: FileText, title: "Invoice", meta: "INV-2081 · 12 items", tone: "text-foreground" },
-  { icon: Sparkles, title: "AI Compliance Check", meta: "24 checks passed · 2 warnings", tone: "text-brand" },
-  { icon: Gauge, title: "Customs Readiness", meta: "Score 96 / 100", tone: "text-warning" },
+  { icon: ShieldCheck, title: "India Export Check", meta: "DGFT · CBIC · ICEGATE", tone: "text-brand", flag: "🇮🇳" },
+  { icon: ShieldCheck, title: "Singapore Import Check", meta: "Singapore Customs · TradeNet", tone: "text-brand", flag: "🇸🇬" },
+  { icon: Handshake, title: "CECA Validation", meta: "Rules of origin · tariff eligibility", tone: "text-warning" },
   { icon: PackageCheck, title: "Broker Ready", meta: "Ready to file · ICEGATE", tone: "text-success" },
 ];
 
@@ -36,16 +37,19 @@ export function Hero() {
             Pre-shipment compliance intelligence
           </div>
           <h1 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Prepare Broker-Ready
-            <br />
-            Export Shipments with{" "}
+            Prepare Broker-Ready{" "}
             <span className="bg-gradient-to-br from-brand to-foreground bg-clip-text text-transparent">
-              AI
-            </span>
+              India–Singapore
+            </span>{" "}
+            Export Shipments
           </h1>
+          <div className="mt-6 inline-flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl border border-border bg-card px-3 py-2 text-[11px] shadow-sm">
+            <span className="font-semibold uppercase tracking-widest text-brand">Powered by Official Regulations</span>
+            <span className="text-muted-foreground">DGFT • CBIC • ICEGATE • Singapore Customs • Enterprise Singapore • CECA</span>
+          </div>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            ExportPilot AI helps Indian MSMEs identify compliance issues before customs filing
-            using official India and Singapore regulations — enabling faster, more confident exports.
+            ExportPilot AI helps Indian MSMEs prepare broker-ready export shipments by validating both India's
+            export requirements and Singapore's import requirements before customs filing.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <button className="inline-flex items-center gap-2 rounded-md bg-brand px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:translate-y-[-1px] hover:shadow-md">
@@ -97,7 +101,7 @@ export function Hero() {
                   className="flex items-center gap-3 rounded-xl border border-border/70 bg-background p-4"
                 >
                   <span className={`flex h-10 w-10 items-center justify-center rounded-lg bg-muted ${s.tone}`}>
-                    <s.icon className="h-5 w-5" />
+                    {s.flag ? <span className="text-lg leading-none">{s.flag}</span> : <s.icon className="h-5 w-5" />}
                   </span>
                   <div className="flex-1">
                     <div className="text-sm font-medium text-foreground">{s.title}</div>

@@ -5,7 +5,7 @@ const rows = [
   ["Problems found after filing", "Problems detected before filing"],
   ["Manual compliance checks", "AI-assisted validation"],
   ["Reactive corrections", "Evidence-backed recommendations"],
-  ["Depends completely on broker", "Broker-ready shipments"],
+  ["Problems discovered late in the export process", "Broker-ready shipments with explainable compliance checks"],
 ];
 
 export function WhyExportPilot() {

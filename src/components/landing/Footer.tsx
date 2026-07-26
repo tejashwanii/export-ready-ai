@@ -20,7 +20,7 @@ export function Footer() {
             </span>
           </div>
           <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-            AI-powered pre-shipment compliance intelligence for Indian MSMEs.
+            AI-powered cross-border compliance intelligence for India–Singapore exports.
           </p>
         </div>
         {cols.map((c) => (

@@ -4,7 +4,7 @@ import { Upload, ScanText, BookOpenCheck, ShieldCheck, PackageCheck } from "luci
 const steps = [
   { icon: Upload, title: "Upload Documents", desc: "Invoices, packing lists, certificates." },
   { icon: ScanText, title: "AI Extracts Data", desc: "Structured fields from unstructured docs." },
-  { icon: BookOpenCheck, title: "Checks Regulations", desc: "Live DGFT, CBIC & Singapore rules." },
+  { icon: BookOpenCheck, title: "Cross-Border Validation", desc: "Validates India export regulations, Singapore import regulations, and CECA requirements together." },
   { icon: ShieldCheck, title: "Compliance Assessment", desc: "Prioritized issues & explanations." },
   { icon: PackageCheck, title: "Broker Ready", desc: "Hand-off with a clean shipment file." },
 ];
