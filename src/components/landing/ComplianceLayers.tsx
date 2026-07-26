@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
@@ -34,9 +35,8 @@ export function ComplianceLayers() {
 
       <div className="mt-12 grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr]">
         {cards.map((c, i) => (
-          <>
+          <Fragment key={c.title}>
             <motion.div
-              key={c.title}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -64,13 +64,13 @@ export function ComplianceLayers() {
               </div>
             </motion.div>
             {i < cards.length - 1 && (
-              <div key={`arrow-${i}`} className="flex items-center justify-center">
+              <div className="flex items-center justify-center">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-brand shadow-sm">
                   <ArrowRight className="h-4 w-4 rotate-90 lg:rotate-0" />
                 </span>
               </div>
             )}
-          </>
+          </Fragment>
         ))}
       </div>
 
