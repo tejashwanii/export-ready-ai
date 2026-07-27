@@ -4,6 +4,7 @@ import { ArrowLeft, PackagePlus } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createShipment } from "@/services/shipmentService";
 
 type ShipmentFormData = {
   shipmentName: string;
@@ -31,6 +32,9 @@ export const Route = createFileRoute("/create-shipment")({
 export function CreateShipment() {
   const [formData, setFormData] = useState<ShipmentFormData>(initialFormData);
   const [errors, setErrors] = useState<ShipmentFormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -38,9 +42,11 @@ export function CreateShipment() {
 
     setFormData((currentData) => ({ ...currentData, [field]: value }));
     setErrors((currentErrors) => ({ ...currentErrors, [field]: undefined }));
+    setSuccessMessage(null);
+    setErrorMessage(null);
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const nextErrors: ShipmentFormErrors = {};
@@ -58,6 +64,28 @@ export function CreateShipment() {
     }
 
     setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+
+    try {
+      await createShipment({
+        shipment_name: formData.shipmentName.trim(),
+        company_name: formData.companyName.trim(),
+        destination_country: formData.destinationCountry.trim(),
+        product_name: formData.productName.trim(),
+      });
+      setFormData(initialFormData);
+      setSuccessMessage("Shipment created successfully.");
+    } catch {
+      setErrorMessage("We couldn't create the shipment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -88,6 +116,23 @@ export function CreateShipment() {
           </div>
 
           <form className="mt-8 space-y-5" noValidate onSubmit={handleSubmit}>
+            {successMessage ? (
+              <p
+                role="status"
+                className="rounded-md border border-success/30 bg-success/10 px-3 py-2 text-sm text-success"
+              >
+                {successMessage}
+              </p>
+            ) : null}
+            {errorMessage ? (
+              <p
+                role="alert"
+                className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              >
+                {errorMessage}
+              </p>
+            ) : null}
+
             <div className="space-y-2">
               <Label htmlFor="shipmentName">Shipment Name</Label>
               <Input
@@ -171,10 +216,11 @@ export function CreateShipment() {
               </Link>
               <button
                 type="submit"
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-brand px-4 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:translate-y-[-1px] hover:shadow-md"
+                disabled={isSubmitting}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-brand px-4 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:translate-y-[-1px] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-sm"
               >
                 <PackagePlus className="h-4 w-4" />
-                Create Shipment
+                {isSubmitting ? "Creating Shipment..." : "Create Shipment"}
               </button>
             </div>
           </form>
