@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export function FinalCTA() {
   return (
@@ -31,9 +32,12 @@ export function FinalCTA() {
             Validate cross-border compliance before filing and export with confidence.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <button className="inline-flex items-center gap-2 rounded-md bg-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:translate-y-[-1px] hover:shadow-md">
+            <Link
+              to="/create-shipment"
+              className="inline-flex items-center gap-2 rounded-md bg-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:translate-y-[-1px] hover:shadow-md"
+            >
               Start New Shipment <ArrowRight className="h-4 w-4" />
-            </button>
+            </Link>
             <button className="inline-flex items-center rounded-md border border-border bg-background px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent">
               Talk to sales
             </button>
