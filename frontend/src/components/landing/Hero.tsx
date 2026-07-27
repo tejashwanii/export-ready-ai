@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, PlayCircle, FileText, ShieldCheck, PackageCheck, Handshake } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 const flow: { icon: typeof FileText; title: string; meta: string; tone: string; flag?: string }[] = [
   { icon: FileText, title: "Invoice", meta: "INV-2081 · 12 items", tone: "text-foreground" },
@@ -52,10 +53,13 @@ export function Hero() {
             export requirements and Singapore's import requirements before customs filing.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <button className="inline-flex items-center gap-2 rounded-md bg-brand px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:translate-y-[-1px] hover:shadow-md">
+            <Link
+              to="/create-shipment"
+              className="inline-flex items-center gap-2 rounded-md bg-brand px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:translate-y-[-1px] hover:shadow-md"
+            >
               Start New Shipment
               <ArrowRight className="h-4 w-4" />
-            </button>
+            </Link>
             <button className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent">
               <PlayCircle className="h-4 w-4" />
               Watch Demo
