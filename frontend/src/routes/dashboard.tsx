@@ -65,10 +65,11 @@ function ShipmentCard({ shipment }: { shipment: Shipment }) {
         </div>
       </CardContent>
       <CardFooter className="mt-auto justify-end border-t border-border/70 pt-4">
-        {/* TODO: Link to the individual shipment once its detail route is available. */}
-        <Button variant="outline" disabled aria-label={`Open ${shipment.shipment_name}`}>
-          Open
-          <ArrowRight />
+        <Button asChild variant="outline">
+          <Link to="/shipment/$shipmentId" params={{ shipmentId: shipment.id }}>
+            Open
+            <ArrowRight />
+          </Link>
         </Button>
       </CardFooter>
     </Card>

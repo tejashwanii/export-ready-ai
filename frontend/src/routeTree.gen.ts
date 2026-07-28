@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreateShipmentRouteImport } from './routes/create-shipment'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ShipmentShipmentIdRouteImport } from './routes/shipment/$shipmentId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,49 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShipmentShipmentIdRoute = ShipmentShipmentIdRouteImport.update({
+  id: '/shipment/$shipmentId',
+  path: '/shipment/$shipmentId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create-shipment': typeof CreateShipmentRoute
   '/dashboard': typeof DashboardRoute
+  '/shipment/$shipmentId': typeof ShipmentShipmentIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-shipment': typeof CreateShipmentRoute
   '/dashboard': typeof DashboardRoute
+  '/shipment/$shipmentId': typeof ShipmentShipmentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/create-shipment': typeof CreateShipmentRoute
   '/dashboard': typeof DashboardRoute
+  '/shipment/$shipmentId': typeof ShipmentShipmentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create-shipment' | '/dashboard'
+  fullPaths: '/' | '/create-shipment' | '/dashboard' | '/shipment/$shipmentId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create-shipment' | '/dashboard'
-  id: '__root__' | '/' | '/create-shipment' | '/dashboard'
+  to: '/' | '/create-shipment' | '/dashboard' | '/shipment/$shipmentId'
+  id:
+    | '__root__'
+    | '/'
+    | '/create-shipment'
+    | '/dashboard'
+    | '/shipment/$shipmentId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateShipmentRoute: typeof CreateShipmentRoute
   DashboardRoute: typeof DashboardRoute
+  ShipmentShipmentIdRoute: typeof ShipmentShipmentIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +97,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shipment/$shipmentId': {
+      id: '/shipment/$shipmentId'
+      path: '/shipment/$shipmentId'
+      fullPath: '/shipment/$shipmentId'
+      preLoaderRoute: typeof ShipmentShipmentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +111,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateShipmentRoute: CreateShipmentRoute,
   DashboardRoute: DashboardRoute,
+  ShipmentShipmentIdRoute: ShipmentShipmentIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
