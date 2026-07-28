@@ -8,22 +8,27 @@ import {
   Package,
   RefreshCw,
   ShieldCheck,
-  Upload,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
+import { useState } from "react";
 
 import { ApiRequestError } from "@/services/apiClient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UploadCard } from "@/components/shipment/UploadCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getExportReadinessReport } from "@/lib/readiness";
 import { getShipmentById } from "@/services/shipmentService";
+import { type ShipmentDocumentType } from "@/services/uploadService";
 
 const documents = [
-  { name: "Commercial Invoice", icon: FileText },
-  { name: "Packing List", icon: FileText },
-  { name: "Certificate of Origin", icon: ShieldCheck },
-  { name: "Product Images", icon: FileImage },
-];
+  { name: "Commercial Invoice", icon: FileText, type: "commercial-invoice" },
+  { name: "Packing List", icon: FileText, type: "packing-list" },
+  { name: "Certificate of Origin", icon: ShieldCheck, type: "certificate-of-origin" },
+  { name: "Product Images", icon: FileImage, type: "product-images" },
+] satisfies { name: string; icon: typeof FileText; type: ShipmentDocumentType }[];
 
 export const Route = createFileRoute("/shipment/$shipmentId")({
   head: () => ({
@@ -63,6 +68,11 @@ function DetailsSkeleton() {
 
 export function ShipmentDetails() {
   const { shipmentId } = Route.useParams();
+  const [uploadedDocuments, setUploadedDocuments] = useState<
+    Partial<Record<ShipmentDocumentType, string>>
+  >({});
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
   const {
     data: shipment,
     isLoading,
@@ -76,6 +86,21 @@ export function ShipmentDetails() {
   });
 
   const isNotFound = error instanceof ApiRequestError && error.status === 404;
+  const readinessReport = getExportReadinessReport(
+    Object.keys(uploadedDocuments) as ShipmentDocumentType[],
+  );
+
+  function handleUploadSuccess(documentType: ShipmentDocumentType, fileName: string) {
+    setUploadedDocuments((currentDocuments) => ({ ...currentDocuments, [documentType]: fileName }));
+    setHasAnalyzed(false);
+  }
+
+  async function handleAnalyzeShipment() {
+    setIsAnalyzing(true);
+    await new Promise((resolve) => window.setTimeout(resolve, 2500));
+    setHasAnalyzed(true);
+    setIsAnalyzing(false);
+  }
 
   return (
     <main className="min-h-screen bg-background px-6 py-10 text-foreground sm:py-14">
@@ -173,53 +198,121 @@ export function ShipmentDetails() {
 
               <section>
                 <h2 className="text-xl font-semibold tracking-tight">Documents</h2>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                  {documents.map((document) => {
-                    const Icon = document.icon;
-                    return (
-                      <Card key={document.name}>
-                        <CardContent className="flex items-center gap-3 p-5">
-                          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand/10 text-brand">
-                            <Icon className="h-5 w-5" />
-                          </span>
-                          <div>
-                            <p className="text-sm font-medium">{document.name}</p>
-                            <p className="mt-1 text-xs text-muted-foreground">Not Uploaded</p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                <div id="documents" className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                  {documents.map((document) => (
+                    <UploadCard
+                      key={document.type}
+                      shipmentId={shipment.id}
+                      documentType={document.type}
+                      title={document.name}
+                      icon={document.icon}
+                      onUploadSuccess={handleUploadSuccess}
+                    />
+                  ))}
                 </div>
               </section>
 
               <section>
                 <h2 className="text-xl font-semibold tracking-tight">AI Readiness</h2>
-                <Card className="mt-4 border-brand/20 bg-brand/5">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <ShieldCheck className="h-5 w-5 text-brand" />
-                      Export Readiness
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Upload documents to begin AI analysis.
-                    </p>
-                  </CardContent>
-                </Card>
+                {hasAnalyzed ? (
+                  <Card className="mt-4 border-brand/20">
+                    <CardHeader className="gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <ShieldCheck className="h-5 w-5 text-brand" />
+                          Export Readiness
+                        </CardTitle>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          {readinessReport.summary}
+                        </p>
+                      </div>
+                      <span className="rounded-lg bg-brand/10 px-3 py-2 text-lg font-semibold text-brand">
+                        {readinessReport.score}%
+                      </span>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 border-t border-border/70 pt-6 lg:grid-cols-3">
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          Readiness Score
+                        </p>
+                        <p className="mt-2 text-3xl font-semibold tracking-tight">
+                          {readinessReport.score}%
+                        </p>
+                        <p className="mt-3 text-sm text-muted-foreground">
+                          Risk Level:{" "}
+                          <span className="font-medium text-foreground">
+                            {readinessReport.riskLevel}
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          Document Checklist
+                        </p>
+                        <ul className="mt-3 space-y-2 text-sm">
+                          {readinessReport.checklist.map((document) => (
+                            <li key={document.label} className="flex items-center gap-2">
+                              {document.isUploaded ? (
+                                <CheckCircle2 className="h-4 w-4 text-success" />
+                              ) : (
+                                <XCircle className="h-4 w-4 text-destructive" />
+                              )}
+                              {document.label}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          Recommendations
+                        </p>
+                        <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                          {readinessReport.recommendations.map((recommendation) => (
+                            <li key={recommendation} className="flex gap-2">
+                              <span className="text-brand">•</span>
+                              {recommendation}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card className="mt-4 border-brand/20 bg-brand/5">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <ShieldCheck className="h-5 w-5 text-brand" />
+                        Export Readiness
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                        Upload documents and analyze this shipment to view its readiness report.
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
               </section>
 
               <section>
                 <h2 className="text-xl font-semibold tracking-tight">Actions</h2>
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                  <Button disabled>
-                    <Upload />
+                  <Button
+                    type="button"
+                    onClick={() =>
+                      document.getElementById("documents")?.scrollIntoView({ behavior: "smooth" })
+                    }
+                  >
                     Upload Documents
                   </Button>
-                  <Button disabled variant="outline">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isAnalyzing}
+                    onClick={handleAnalyzeShipment}
+                  >
                     <ShieldCheck />
-                    Analyze Shipment
+                    {isAnalyzing ? "Analyzing Shipment..." : "Analyze Shipment"}
                   </Button>
                 </div>
               </section>
