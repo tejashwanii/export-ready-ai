@@ -1,10 +1,11 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { ArrowLeft, PackagePlus } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createShipment } from "@/services/shipmentService";
+import { createShipment, type Shipment } from "@/services/shipmentService";
 
 type ShipmentFormData = {
   shipmentName: string;
@@ -30,6 +31,8 @@ export const Route = createFileRoute("/create-shipment")({
 });
 
 export function CreateShipment() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState<ShipmentFormData>(initialFormData);
   const [errors, setErrors] = useState<ShipmentFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,14 +76,21 @@ export function CreateShipment() {
     setErrorMessage(null);
 
     try {
-      await createShipment({
+      const shipment = await createShipment({
         shipment_name: formData.shipmentName.trim(),
         company_name: formData.companyName.trim(),
         destination_country: formData.destinationCountry.trim(),
         product_name: formData.productName.trim(),
       });
+
+      queryClient.setQueryData<Shipment[]>(["shipments"], (currentShipments = []) => [
+        shipment,
+        ...currentShipments.filter((currentShipment) => currentShipment.id !== shipment.id),
+      ]);
+      await queryClient.invalidateQueries({ queryKey: ["shipments"] });
       setFormData(initialFormData);
       setSuccessMessage("Shipment created successfully.");
+      await navigate({ to: "/dashboard" });
     } catch {
       setErrorMessage("We couldn't create the shipment. Please try again.");
     } finally {
