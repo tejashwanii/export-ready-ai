@@ -3,12 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   CalendarDays,
+  CheckCircle2,
+  Download,
   FileImage,
   FileText,
   Package,
   RefreshCw,
   ShieldCheck,
-  CheckCircle2,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
@@ -20,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UploadCard } from "@/components/shipment/UploadCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getExportReadinessReport } from "@/lib/readiness";
+import { downloadExportReadinessReport } from "@/services/reportService";
 import { getShipmentById } from "@/services/shipmentService";
 import { type ShipmentDocumentType } from "@/services/uploadService";
 
@@ -73,6 +75,8 @@ export function ShipmentDetails() {
   >({});
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasAnalyzed, setHasAnalyzed] = useState(false);
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+  const [reportDownloadError, setReportDownloadError] = useState<string | null>(null);
   const {
     data: shipment,
     isLoading,
@@ -100,6 +104,23 @@ export function ShipmentDetails() {
     await new Promise((resolve) => window.setTimeout(resolve, 2500));
     setHasAnalyzed(true);
     setIsAnalyzing(false);
+  }
+
+  async function handleDownloadReport() {
+    if (!shipment) {
+      return;
+    }
+
+    setIsDownloadingReport(true);
+    setReportDownloadError(null);
+
+    try {
+      await downloadExportReadinessReport(shipment, readinessReport);
+    } catch {
+      setReportDownloadError("We couldn't generate the report. Please try again.");
+    } finally {
+      setIsDownloadingReport(false);
+    }
   }
 
   return (
@@ -314,7 +335,21 @@ export function ShipmentDetails() {
                     <ShieldCheck />
                     {isAnalyzing ? "Analyzing Shipment..." : "Analyze Shipment"}
                   </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={!hasAnalyzed || isDownloadingReport}
+                    onClick={handleDownloadReport}
+                  >
+                    <Download />
+                    {isDownloadingReport ? "Preparing Report..." : "Download Report"}
+                  </Button>
                 </div>
+                {reportDownloadError ? (
+                  <p className="mt-3 text-sm text-destructive" role="alert">
+                    {reportDownloadError}
+                  </p>
+                ) : null}
               </section>
             </div>
           ) : null}
