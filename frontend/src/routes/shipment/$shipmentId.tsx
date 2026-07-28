@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
   CalendarDays,
@@ -23,7 +23,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getExportReadinessReport } from "@/lib/readiness";
 import { downloadExportReadinessReport } from "@/services/reportService";
 import { getShipmentById } from "@/services/shipmentService";
-import { type ShipmentDocumentType } from "@/services/uploadService";
+import {
+  getShipmentDocuments,
+  type ShipmentDocumentType,
+  type UploadedShipmentDocument,
+} from "@/services/uploadService";
 
 const documents = [
   { name: "Commercial Invoice", icon: FileText, type: "commercial-invoice" },
@@ -70,9 +74,7 @@ function DetailsSkeleton() {
 
 export function ShipmentDetails() {
   const { shipmentId } = Route.useParams();
-  const [uploadedDocuments, setUploadedDocuments] = useState<
-    Partial<Record<ShipmentDocumentType, string>>
-  >({});
+  const queryClient = useQueryClient();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasAnalyzed, setHasAnalyzed] = useState(false);
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
@@ -88,14 +90,27 @@ export function ShipmentDetails() {
     queryFn: () => getShipmentById(shipmentId),
     retry: false,
   });
+  const { data: uploadedDocuments = [] } = useQuery({
+    queryKey: ["shipment-documents", shipmentId],
+    queryFn: () => getShipmentDocuments(shipmentId),
+  });
 
   const isNotFound = error instanceof ApiRequestError && error.status === 404;
   const readinessReport = getExportReadinessReport(
-    Object.keys(uploadedDocuments) as ShipmentDocumentType[],
+    uploadedDocuments.map((document) => document.documentType),
   );
 
-  function handleUploadSuccess(documentType: ShipmentDocumentType, fileName: string) {
-    setUploadedDocuments((currentDocuments) => ({ ...currentDocuments, [documentType]: fileName }));
+  function handleUploadSuccess(uploadedDocument: UploadedShipmentDocument) {
+    queryClient.setQueryData<UploadedShipmentDocument[]>(
+      ["shipment-documents", shipmentId],
+      (currentDocuments = []) => [
+        uploadedDocument,
+        ...currentDocuments.filter(
+          (document) => document.documentType !== uploadedDocument.documentType,
+        ),
+      ],
+    );
+    void queryClient.invalidateQueries({ queryKey: ["shipment-documents", shipmentId] });
     setHasAnalyzed(false);
   }
 
@@ -227,6 +242,11 @@ export function ShipmentDetails() {
                       documentType={document.type}
                       title={document.name}
                       icon={document.icon}
+                      serverFileName={
+                        uploadedDocuments.find(
+                          (uploadedDocument) => uploadedDocument.documentType === document.type,
+                        )?.originalFilename
+                      }
                       onUploadSuccess={handleUploadSuccess}
                     />
                   ))}

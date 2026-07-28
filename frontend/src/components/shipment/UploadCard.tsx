@@ -11,7 +11,8 @@ interface UploadCardProps {
   documentType: ShipmentDocumentType;
   title: string;
   icon: LucideIcon;
-  onUploadSuccess: (documentType: ShipmentDocumentType, fileName: string) => void;
+  serverFileName?: string;
+  onUploadSuccess: (uploadedDocument: Awaited<ReturnType<typeof uploadShipmentDocument>>) => void;
 }
 
 export function UploadCard({
@@ -19,6 +20,7 @@ export function UploadCard({
   documentType,
   title,
   icon: Icon,
+  serverFileName,
   onUploadSuccess,
 }: UploadCardProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -45,8 +47,8 @@ export function UploadCard({
 
     try {
       const uploadedDocument = await uploadShipmentDocument({ shipmentId, documentType, file });
-      setUploadedFileName(uploadedDocument.fileName);
-      onUploadSuccess(documentType, uploadedDocument.fileName);
+      setUploadedFileName(uploadedDocument.originalFilename);
+      onUploadSuccess(uploadedDocument);
     } catch {
       setErrorMessage("We couldn't upload this file. Please try again.");
     } finally {
@@ -63,7 +65,7 @@ export function UploadCard({
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">{title}</p>
-            {uploadedFileName ? (
+            {uploadedFileName || serverFileName ? (
               <div className="mt-1 flex items-center gap-1.5 text-xs text-success">
                 <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                 <span>Uploaded</span>
@@ -74,9 +76,12 @@ export function UploadCard({
           </div>
         </div>
 
-        {uploadedFileName ? (
-          <p className="mt-4 truncate text-xs text-muted-foreground" title={uploadedFileName}>
-            {uploadedFileName}
+        {uploadedFileName || serverFileName ? (
+          <p
+            className="mt-4 truncate text-xs text-muted-foreground"
+            title={uploadedFileName ?? serverFileName}
+          >
+            {uploadedFileName ?? serverFileName}
           </p>
         ) : null}
         {errorMessage ? (
@@ -102,7 +107,11 @@ export function UploadCard({
           onClick={() => inputRef.current?.click()}
         >
           <Upload />
-          {isUploading ? "Uploading..." : uploadedFileName ? "Replace file" : "Upload"}
+          {isUploading
+            ? "Uploading..."
+            : uploadedFileName || serverFileName
+              ? "Replace file"
+              : "Upload"}
         </Button>
       </CardContent>
     </Card>
