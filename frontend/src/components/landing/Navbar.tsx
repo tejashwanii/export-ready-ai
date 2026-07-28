@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Rocket } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 const links = [
   { label: "Features", href: "#features" },
@@ -41,9 +42,12 @@ export function Navbar() {
           <button className="hidden rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground sm:inline-flex">
             Login
           </button>
-          <button className="inline-flex items-center rounded-md bg-foreground px-3.5 py-1.5 text-sm font-medium text-background shadow-sm transition-transform hover:scale-[1.02]">
-            Get Started
-          </button>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center rounded-md bg-foreground px-3.5 py-1.5 text-sm font-medium text-background shadow-sm transition-transform hover:scale-[1.02]"
+          >
+            Go to Dashboard
+          </Link>
         </div>
       </div>
     </motion.header>
