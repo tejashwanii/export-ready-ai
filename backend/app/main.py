@@ -5,8 +5,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.health import router as health_router
+from app.api.documents import router as documents_router
 from app.api.shipments import router as shipments_router
 from app.database import Base, engine
+from app.models.document import Document
 from app.models.shipment import Shipment
 
 
@@ -41,3 +43,4 @@ app.add_middleware(
 
 app.include_router(health_router)
 app.include_router(shipments_router)
+app.include_router(documents_router)
