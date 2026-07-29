@@ -22,3 +22,4 @@ class DocumentResponse(BaseModel):
     stored_filename: str
     file_path: str
     uploaded_at: datetime
+    extracted_fields: dict[str, str] | None

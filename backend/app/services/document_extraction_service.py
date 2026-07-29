@@ -9,6 +9,7 @@ from PIL import Image
 from sqlalchemy.orm import Session
 
 from app.models.document import Document
+from app.services.field_extraction_service import FieldExtractionService
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +90,10 @@ class DocumentExtractionService:
     def extract_and_store(db: Session, document: Document, source_path: Path, extension: str) -> None:
         extracted_text = DocumentExtractionService.extract_text_from_file(source_path, extension)
         document.extracted_text = extracted_text
+        document.extracted_fields = FieldExtractionService.extract_fields(
+            document.document_type,
+            extracted_text,
+        )
         document.extracted_at = datetime.now(timezone.utc) if extracted_text is not None else None
         db.add(document)
         db.commit()
@@ -96,4 +101,4 @@ class DocumentExtractionService:
         if extracted_text is None:
             logger.warning("No text extracted for document %s", document.id)
         else:
-            logger.info("Stored extracted text for document %s", document.id)
+            logger.info("Stored extracted text and fields for document %s", document.id)
