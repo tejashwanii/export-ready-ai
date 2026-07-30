@@ -39,14 +39,15 @@ class FieldExtractionService:
             {
                 "invoice_number": (r"invoice\s*(?:number|no\.?|#)",),
                 "invoice_date": (r"invoice\s*date", "date"),
-                "exporter": ("exporter", "seller", "consignor"),
-                "importer": ("importer", "buyer", "consignee"),
-                "product_name": (r"product\s*(?:name|description)?", r"goods\s*description", r"description\s*of\s*goods"),
-                "hs_code": (r"hs\s*(?:code|n\.?code)?", r"h\.?s\.?\s*(?:code|n)", r"tariff\s*code"),
-                "quantity": ("quantity", r"qty\.?"),
-                "invoice_value": (r"invoice\s*(?:value|amount|total)", r"total\s*(?:invoice\s*)?(?:value|amount)"),
+                "exporter": (r"exporter\s*(?:name|details)?", "seller", "consignor"),
+                "importer": (r"importer\s*(?:name|details)?", "buyer", "consignee"),
+                "product_name": (r"product\s*(?:name|description)?", r"goods\s*description", r"description\s*of\s*goods", r"item\s*description", "commodity"),
+                "hs_code": (r"hs\s*(?:code|n\.?\s*code)?", r"h\.?s\.?\s*(?:code|n)", r"tariff\s*code", r"customs\s*code"),
+                "quantity": (r"(?:total\s*)?quantity", r"qty\.?"),
+                "invoice_value": (r"invoice\s*(?:value|amount|total)", r"(?:grand\s*)?total\s*(?:invoice\s*)?(?:value|amount)", r"amount\s*payable"),
                 "currency": ("currency",),
                 "destination_country": (r"destination\s*(?:country)?", r"country\s*of\s*destination", r"final\s*destination"),
+                "country_of_origin": (r"country\s*of\s*origin", r"origin\s*country"),
             },
         )
 
@@ -90,7 +91,7 @@ class FieldExtractionService:
     def _find_labeled_value(text: str, labels: tuple[str, ...]) -> str | None:
         labels_pattern = "|".join(f"(?:{label})" for label in labels)
         pattern = re.compile(
-            rf"^\s*(?:{labels_pattern})\s*(?:[:#-]\s*|\s{{2,}})(?P<value>.+?)\s*$",
+            rf"^\s*(?:{labels_pattern})(?:\s*[:#-]\s*|\s+)(?P<value>.+?)\s*$",
             re.IGNORECASE,
         )
         lines = [line.strip() for line in text.splitlines()]
