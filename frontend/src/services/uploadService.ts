@@ -9,6 +9,7 @@ export interface UploadedShipmentDocument {
   storedFilename: string;
   filePath: string;
   uploadedAt: string;
+  extractedFields: Record<string, string> | null;
 }
 
 interface UploadShipmentDocumentInput {
@@ -34,6 +35,7 @@ type DocumentApiResponse = {
   stored_filename: string;
   file_path: string;
   uploaded_at: string;
+  extracted_fields: Record<string, string> | null;
 };
 
 function toUploadedDocument(document: DocumentApiResponse): UploadedShipmentDocument {
@@ -53,6 +55,7 @@ function toUploadedDocument(document: DocumentApiResponse): UploadedShipmentDocu
     storedFilename: document.stored_filename,
     filePath: document.file_path,
     uploadedAt: document.uploaded_at,
+    extractedFields: document.extracted_fields,
   };
 }
 

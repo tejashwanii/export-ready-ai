@@ -6,7 +6,7 @@ const links = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how" },
   { label: "Why ExportPilot", href: "#why" },
-  { label: "Roadmap", href: "#roadmap" },
+ 
   { label: "Contact", href: "#contact" },
 ];
 
