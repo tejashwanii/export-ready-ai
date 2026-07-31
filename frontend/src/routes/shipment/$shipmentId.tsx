@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UploadCard } from "@/components/shipment/UploadCard";
+import { ShipmentIntelligence } from "@/components/shipment/ShipmentIntelligence";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getExportReadinessReport } from "@/lib/readiness";
 import { downloadExportReadinessReport } from "@/services/reportService";
@@ -111,6 +112,8 @@ export function ShipmentDetails() {
       ],
     );
     void queryClient.invalidateQueries({ queryKey: ["shipment-documents", shipmentId] });
+    void queryClient.invalidateQueries({ queryKey: ["shipment-compliance", shipmentId] });
+    void queryClient.invalidateQueries({ queryKey: ["shipment-recommendations", shipmentId] });
     setHasAnalyzed(false);
   }
 
@@ -251,6 +254,11 @@ export function ShipmentDetails() {
                     />
                   ))}
                 </div>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-semibold tracking-tight">Shipment Intelligence</h2>
+                <ShipmentIntelligence shipmentId={shipment.id} />
               </section>
 
               <section>
