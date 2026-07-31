@@ -74,18 +74,55 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
-    ],
+meta: [
+  { charSet: "utf-8" },
+  { name: "viewport", content: "width=device-width, initial-scale=1" },
+
+  { title: "ExportPilot AI | Broker-Ready Export Compliance" },
+
+  {
+    name: "description",
+    content:
+      "ExportPilot AI helps Indian MSMEs prepare broker-ready India–Singapore export shipments using AI-powered document intelligence and compliance validation.",
+  },
+
+  {
+    name: "author",
+    content: "ExportPilot AI Team",
+  },
+
+  {
+    property: "og:title",
+    content: "ExportPilot AI",
+  },
+
+  {
+    property: "og:description",
+    content:
+      "AI-powered cross-border compliance platform for India–Singapore exports.",
+  },
+
+  {
+    property: "og:type",
+    content: "website",
+  },
+
+  {
+    name: "twitter:card",
+    content: "summary_large_image",
+  },
+
+  {
+    name: "twitter:title",
+    content: "ExportPilot AI",
+  },
+
+  {
+    name: "twitter:description",
+    content:
+      "Prepare broker-ready export shipments with AI-powered compliance intelligence.",
+  },
+],
     links: [
       {
         rel: "stylesheet",
